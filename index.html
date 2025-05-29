@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple To-Do App</title>
+</head>
+<body>
+  <h1>Simple To-Do App</h1>
+  <input id="todoInput" placeholder="Enter todo" />
+  <button onclick="addTodo()">Add</button>
+  <ul id="todoList"></ul>
+
+  <script>
+    const apiUrl = 'https://<your-backend-app-name>.azurewebsites.net/api/todos';
+
+    async function fetchTodos() {
+      const response = await fetch(apiUrl);
+      const todos = await response.json();
+      const list = document.getElementById('todoList');
+      list.innerHTML = '';
+      todos.forEach(todo => {
+        const li = document.createElement('li');
+        li.textContent = todo;
+        list.appendChild(li);
+      });
+    }
+
+    async function addTodo() {
+      const input = document.getElementById('todoInput');
+      const todo = input.value;
+      if(!todo) return alert('Please enter a todo');
+
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ todo })
+      });
+
+      input.value = '';
+      fetchTodos();
+    }
+
+    fetchTodos();
+  </script>
+</body>
+</html>
